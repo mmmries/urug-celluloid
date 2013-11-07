@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+require_relative '../config/configure.rb'
+require 'commands/tick_tock.rb'
+
+Commands::TickTock.new(ENV).go
