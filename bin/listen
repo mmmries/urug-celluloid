@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+require_relative '../config/configure'
+require 'commands/listen'
+
+require 'yaml'
+credentials = YAML.load_file("#{BASEPATH}/config/twitter_credentials.yml")
+
+Commands::Listen.new(ARGV, credentials).go
