@@ -1,4 +1,5 @@
 require 'twitter'
+require 'twitter_searcher'
 module Commands
   class Listen
     def initialize(queries, credentials)
@@ -10,33 +11,15 @@ module Commands
     end
 
     def go
-      search_term = "##{@query}"
-      puts "Searching for #{search_term}"
-      search_for_term(search_term) do |tweet|
-        @since_id = tweet.id if tweet.id > @since_id
+      searcher = TwitterSearcher.new(client, query)
+      searcher.each do |tweet|
         print_tweet(tweet)
       end
+      puts "Searcher Last Id: #{searcher.since_id}"
     end
 
     private
     attr_reader :credentials, :client, :query, :since_id
-
-    def search_for_term(search_term, &block)
-      results = client.search(search_term)
-      yield_search_results(results,&block)
-    end
-
-    def yield_search_results(results,&block)
-      begin
-        results.statuses.each(&block)
-        if results.next_page?
-          next_page = results.next_page
-          results = client.search(next_page.delete(:q), next_page)
-        else
-          results = nil
-        end
-      end while results
-    end
 
     def print_tweet(tweet)
       puts "#{tweet.user.screen_name} :: #{tweet.created_at} :: #{tweet.text}"
