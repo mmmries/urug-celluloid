@@ -12,10 +12,12 @@ module Commands
 
     def go
       searcher = TwitterSearcher.new(client, query)
-      searcher.each do |tweet|
-        print_tweet(tweet)
+      while true
+        searcher.each do |tweet|
+          print_tweet(tweet)
+        end
+        sleep 5
       end
-      puts "Searcher Last Id: #{searcher.since_id}"
     end
 
     private

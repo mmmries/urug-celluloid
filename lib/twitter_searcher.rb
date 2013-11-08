@@ -1,12 +1,12 @@
 class TwitterSearcher
   attr_reader :since_id
-  def initialize(client, q, since_id = nil)
+  def initialize(client, q, since_id = 0)
     @client, @q, @since_id = client, q, since_id
   end
 
   def each(&block)
     search_for_term do |tweet|
-      @since_id = tweet.id if since_id.nil? || tweet.id > since_id
+      @since_id = tweet.id if tweet.id > since_id
       block.call(tweet)
     end
   end
@@ -14,7 +14,7 @@ class TwitterSearcher
   private
   attr_reader :client, :q
   def search_for_term(&block)
-    results = client.search(q)
+    results = client.search(q, since_id: since_id)
     results.statuses.each(&block)
   end
 end
