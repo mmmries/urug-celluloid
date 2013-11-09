@@ -1,27 +1,27 @@
-require 'twitter'
-require 'twitter_searcher'
+require 'twitter_listener'
+require 'thread'
+
 module Commands
   class Listen
     def initialize(queries, credentials)
       @credentials = credentials
-      @client = Twitter::Client.new(credentials)
-      @query = queries.first
-      raise ArgumentError.new("You must provide one search term") unless @query
-      @since_id = 0
+      @queries = queries
     end
 
     def go
-      searcher = TwitterSearcher.new(client, query)
+      queue = Queue.new
+      actors = queries.map do |q|
+        l = TwitterListener.new(credentials, q, queue)
+        l.async.start_listening
+        l
+      end
       while true
-        searcher.each do |tweet|
-          print_tweet(tweet)
-        end
-        sleep 5
+        print_tweet(queue.pop)
       end
     end
 
     private
-    attr_reader :credentials, :client, :query, :since_id
+    attr_reader :credentials, :queries
 
     def print_tweet(tweet)
       puts "#{tweet.user.screen_name} :: #{tweet.created_at} :: #{tweet.text}"
