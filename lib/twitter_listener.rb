@@ -6,6 +6,7 @@ class TwitterListener
     @client = Twitter::Client.new(credentials)
     @query = query
     @queue = queue
+    async.start_listening
   end
 
   def start_listening
