@@ -10,10 +10,9 @@ module Commands
 
     def go
       queue = Queue.new
-      actors = queries.map do |q|
-        l = TwitterListener.new(credentials, q, queue)
-        l.async.start_listening
-        l
+      supervisor = Celluloid::SupervisionGroup.run!
+      queries.each do |q|
+        supervisor.supervise(TwitterListener, credentials, q, queue)
       end
       while true
         print_tweet(queue.pop)
