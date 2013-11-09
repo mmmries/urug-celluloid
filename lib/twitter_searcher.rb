@@ -5,6 +5,7 @@ class TwitterSearcher
   end
 
   def each(&block)
+    raise "Ow!#{q}" if rand(3) == 1
     search_for_term do |tweet|
       @since_id = tweet.id if tweet.id > since_id
       block.call(tweet)
