@@ -1,4 +1,4 @@
-require 'twitter_listener'
+require 'listen_pool'
 require 'thread'
 
 module Commands
@@ -10,10 +10,8 @@ module Commands
 
     def go
       queue = Queue.new
-      supervisor = Celluloid::SupervisionGroup.run!
-      queries.each do |q|
-        supervisor.supervise(TwitterListener, credentials, q, queue)
-      end
+      pool = ListenPool.new(credentials, queries, queue)
+      pool.async.listen
       while true
         print_tweet(queue.pop)
       end
