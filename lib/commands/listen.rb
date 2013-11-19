@@ -1,6 +1,4 @@
-require 'listen_pool'
-require 'thread'
-
+require 'twitter'
 module Commands
   class Listen
     def initialize(queries, credentials)
@@ -9,11 +7,10 @@ module Commands
     end
 
     def go
-      queue = Queue.new
-      pool = ListenPool.new(credentials, queries, queue)
-      pool.async.listen
-      while true
-        print_tweet(queue.pop)
+      client = Twitter::Client.new(credentials)
+      results = client.search(queries.first)
+      results.statuses.each do |tweet|
+        print_tweet(tweet)
       end
     end
 
