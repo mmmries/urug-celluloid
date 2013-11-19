@@ -14,7 +14,7 @@ class TwitterStream
       searcher.each do |tweet|
         queue << tweet
       end
-      sleep 5
+      sleep rand(5)
     end
   end
 end
