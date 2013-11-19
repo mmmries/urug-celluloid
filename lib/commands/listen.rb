@@ -1,4 +1,4 @@
-require 'twitter'
+require 'twitter_searcher'
 module Commands
   class Listen
     def initialize(queries, credentials)
@@ -7,10 +7,12 @@ module Commands
     end
 
     def go
-      client = Twitter::Client.new(credentials)
-      results = client.search(queries.first)
-      results.statuses.each do |tweet|
-        print_tweet(tweet)
+      searcher = TwitterSearcher.new(credentials, queries.first)
+      while true
+        searcher.each do |tweet|
+          print_tweet(tweet)
+        end
+        sleep 5
       end
     end
 
