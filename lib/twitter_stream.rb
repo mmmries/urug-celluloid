@@ -11,6 +11,7 @@ class TwitterStream
 
   def stream(queue)
     while true
+      raise "Ouch" if rand(3) == 1
       searcher.each do |tweet|
         queue << tweet
       end
