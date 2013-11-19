@@ -3,13 +3,15 @@ require 'twitter_searcher'
 class TwitterStream
   include Celluloid
 
-  attr_reader :searcher
+  attr_reader :searcher, :queue
 
-  def initialize(credentials, query)
+  def initialize(credentials, query, queue)
     @searcher = TwitterSearcher.new(credentials, query)
+    @queue = queue
+    async.stream
   end
 
-  def stream(queue)
+  def stream
     while true
       raise "Ouch" if rand(3) == 1
       searcher.each do |tweet|

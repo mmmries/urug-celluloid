@@ -9,10 +9,10 @@ module Commands
 
     def go
       queue = Queue.new
+      group = Celluloid::SupervisionGroup.run!
       streams = queries.map do |q|
-        TwitterStream.new(credentials, q)
+        group.add(TwitterStream, args: [credentials, q, queue])
       end
-      streams.each{|stream| stream.async.stream(queue)}
 
       while true
         print_tweet( queue.pop )
