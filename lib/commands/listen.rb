@@ -1,4 +1,5 @@
-require 'twitter_searcher'
+require 'twitter_stream'
+require 'thread'
 module Commands
   class Listen
     def initialize(queries, credentials)
@@ -7,12 +8,14 @@ module Commands
     end
 
     def go
-      searcher = TwitterSearcher.new(credentials, queries.first)
+      queue = Queue.new
+      streams = queries.map do |q|
+        TwitterStream.new(credentials, q)
+      end
+      streams.each{|stream| stream.async.stream(queue)}
+
       while true
-        searcher.each do |tweet|
-          print_tweet(tweet)
-        end
-        sleep 5
+        print_tweet( queue.pop )
       end
     end
 
