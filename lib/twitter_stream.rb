@@ -18,7 +18,13 @@ class TwitterStream
       searcher.each do |tweet|
         queue << {query: query, tweet: tweet}
       end
-      sleep rand(5)
+      fib(38)
     end
+  end
+
+  private
+  def fib(n)
+    return 1 if n == 0 || n == 1
+    fib(n-1) + fib(n-2)
   end
 end
